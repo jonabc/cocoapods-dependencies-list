@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-require_relative "lib/cocoapods/dependencies/list/version"
+lib = File.expand_path("lib", __dir__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require "cocoapods_dependencies_list/version"
 
 Gem::Specification.new do |spec|
   spec.name = "cocoapods-dependencies-list"
-  spec.version = Cocoapods::Dependencies::List::VERSION
+  spec.version = CocoapodsDependenciesList::VERSION
   spec.authors = ["Jon Ruskin"]
   spec.email = ["jon.ruskin@gmail.com"]
 
