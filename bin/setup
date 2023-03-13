@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 IFS=$'\n\t'
-set -vx
 
+ROOT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+cd "$ROOT_PATH"
 bundle install
+
+cd "$ROOT_PATH/test/fixtures"
+bundle exec pod install
