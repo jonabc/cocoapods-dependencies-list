@@ -19,16 +19,19 @@ module Pod
       def self.options
         [
           ["--targets", "A comma-delimited list of podfile targets"],
-          ["--fields", "A comma-delimited list of podspec fields to include"]
+          ["--fields", "A comma-delimited list of podspec fields to include"],
+          ["--include-path", "Include the pod installation path in the installation sandbox"]
         ].concat(super)
       end
 
-      attr_reader :targets, :fields
+      attr_reader :targets, :fields, :include_path
+      alias :include_path? :include_path
 
       def initialize(argv)
         @targets = argv.option("targets", "").split(",").map(&:strip)
         @fields = argv.option("fields", "").split(",").map(&:strip)
         @fields = DEFAULT_FIELDS if !@fields.any?
+        @include_path = argv.option("include-path", false)
 
         super
       end
@@ -50,14 +53,18 @@ module Pod
 
         specs_by_target.each do |target, specs|
           specs.map! do |spec|
-            requested_fields_from_spec(spec)
+            fields = requested_fields_from_spec(spec)
+            fields[:path] = config.sandbox.pod_dir(spec.name).to_s if include_path?
+
+            fields
           end
         end
       end
 
       def requested_fields_from_spec(spec)
         @fields.reduce({}) do |accum, field|
-          accum[field] = spec.respond_to?(field.to_sym) ? spec.send(field.to_sym) : nil
+          field = field.to_sym
+          accum[field] = spec.respond_to?(field) ? spec.send(field) : nil
           accum
         end
       end

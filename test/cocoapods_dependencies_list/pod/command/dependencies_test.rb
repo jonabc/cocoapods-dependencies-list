@@ -64,4 +64,15 @@ class Pod::Command::DependenciesTest < Minitest::Test
     assert dependency.has_key?("name")
     assert dependency.has_key?("version")
   end
+
+  def test_it_includes_pod_installation_paths_with_include_path_option
+    dependencies_by_target = run_plugin(options: { "include-path" => true })
+
+    pods_ios_dependencies = dependencies_by_target["Pods-ios"]
+    assert pods_ios_dependencies
+
+    dependency = pods_ios_dependencies.find { |dep| dep["name"] == "Alamofire" }
+    assert dependency
+    assert dependency.has_key?("path")
+  end
 end
