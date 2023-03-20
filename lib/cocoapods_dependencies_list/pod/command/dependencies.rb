@@ -31,7 +31,7 @@ module Pod
         @targets = argv.option("targets", "").split(",").map(&:strip)
         @fields = argv.option("fields", "").split(",").map(&:strip)
         @fields = DEFAULT_FIELDS if !@fields.any?
-        @include_path = argv.option("include-path", false)
+        @include_path = argv.flag?("include-path", false)
 
         super
       end
