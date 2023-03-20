@@ -4,12 +4,11 @@ require "test_helper"
 require "json"
 
 class Pod::Command::DependenciesTest < Minitest::Test
-  def run_plugin(raw: false, options: {})
+  def run_plugin(raw: false, options: [])
     io = StringIO.new
     Pod::UI.output_io = io
 
-    options_args = options.map { |k, v| "--#{k}=#{v}" }
-    argv = CLAide::ARGV.new(["--project-directory=#{FIXTURES_DIRECTORY}", *options_args])
+    argv = CLAide::ARGV.new(["--project-directory=#{FIXTURES_DIRECTORY}", *options])
     command = Pod::Command::Dependencies.new(argv)
     command.run
 
@@ -44,7 +43,7 @@ class Pod::Command::DependenciesTest < Minitest::Test
   end
 
   def test_it_filters_targets_with_targets_option
-    dependencies_by_target = run_plugin(options: { targets: "Pods,Pods-iosTests" })
+    dependencies_by_target = run_plugin(options: ["--targets=Pods,Pods-iosTests"])
 
     assert dependencies_by_target.has_key?("Pods")
     assert dependencies_by_target.has_key?("Pods-iosTests")
@@ -52,7 +51,7 @@ class Pod::Command::DependenciesTest < Minitest::Test
   end
 
   def test_it_filters_targets_with_fields_option
-    dependencies_by_target = run_plugin(options: { fields: "name,version" })
+    dependencies_by_target = run_plugin(options: ["--fields=name,version"])
 
     pods_ios_dependencies = dependencies_by_target["Pods-ios"]
     assert pods_ios_dependencies
@@ -66,7 +65,7 @@ class Pod::Command::DependenciesTest < Minitest::Test
   end
 
   def test_it_includes_pod_installation_paths_with_include_path_option
-    dependencies_by_target = run_plugin(options: { "include-path" => true })
+    dependencies_by_target = run_plugin(options: ["--include-path"])
 
     pods_ios_dependencies = dependencies_by_target["Pods-ios"]
     assert pods_ios_dependencies
